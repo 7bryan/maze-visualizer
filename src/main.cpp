@@ -19,6 +19,8 @@ private:
   std::vector<std::vector<char>> grid;
   std::mt19937 rng;
 
+  std::vector<std::vector<char>> DFSsolution;
+
   bool isValid(int r, int c) {
     return (r > 0 && r < height - 1 && c > 0 && c < width - 1 &&
             grid[r][c] == WALL);
@@ -39,6 +41,39 @@ private:
     }
 
     return neighbors;
+  }
+
+  bool solveDFSHelper(int r, int c, std::vector<std::vector<bool>> &visited) {
+    if (r < 0 || c < 0 || r >= height || c >= width)
+      return false;
+
+    if (grid[r][c] == WALL || visited[r][c])
+      return false;
+
+    if (grid[r][c] == 'E')
+      return true;
+
+    visited[r][c] = true;
+
+    if (grid[r][c] != 'S') {
+      DFSsolution[r][c] = '.';
+    }
+
+    int dr[] = {-1, 1, 0, 0};
+    int dc[] = {0, 0, -1, 1};
+
+    for (int i = 0; i < 4; i++) {
+      if (solveDFSHelper(r + dr[i], c + dc[i], visited)) {
+        return true;
+      }
+    }
+
+    // backtrack
+    if (grid[r][c] != 'S') {
+      DFSsolution[r][c] = ' ';
+    }
+
+    return false;
   }
 
 public:
@@ -88,11 +123,33 @@ public:
     }
 
     // Create an Entrance and an Exit
-    grid[1][0] = PATH;                  // Top-left entrance
-    grid[height - 2][width - 1] = PATH; // Bottom-right exit
+    grid[1][0] = 'S';                  // Top-left entrance
+    grid[height - 2][width - 1] = 'E'; // Bottom-right exit
+  }
+
+  void solveAndPrintDFS() {
+    DFSsolution = grid;
+    std::vector<std::vector<bool>> visited(height,
+                                           std::vector<bool>(width, false));
+
+    int startR = 1;
+    int startC = 0;
+
+    if (solveDFSHelper(startR, startC, visited)) {
+      std::cout << "\nPath found using DFS:\n";
+      for (int r = 0; r < height; ++r) {
+        for (int c = 0; c < width; ++c) {
+          std::cout << DFSsolution[r][c] << DFSsolution[r][c];
+        }
+        std::cout << "\n";
+      }
+    } else {
+      std::cout << "\nNo path existed from the start to exit";
+    }
   }
 
   void print() {
+    std::cout << "Original Maze\n\n";
     for (int r = 0; r < height; ++r) {
       for (int c = 0; c < width; ++c) {
         std::cout << grid[r][c] << grid[r][c];
@@ -103,12 +160,13 @@ public:
 };
 
 int main() {
-  int width = 31;
-  int height = 15;
+  int width = 61;
+  int height = 31;
 
   std::cout << "Generating a " << width << "x" << height << " maze\n\n";
 
   MazeGenerator maze(width, height);
   maze.generate();
   maze.print();
+  maze.solveAndPrintDFS();
 }
