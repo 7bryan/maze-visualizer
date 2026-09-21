@@ -35,3 +35,6 @@ SFML*Dependencies.cmake
 *.so
 *.dylib
 *.dll
+
+.clangd
+Makefile
