@@ -3,5 +3,5 @@
 
 class MazeGenerator {
 public:
-  void generate(Maze &Maze) {}
+  void generate(Maze &Maze);
 };
