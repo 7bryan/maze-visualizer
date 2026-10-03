@@ -6,6 +6,7 @@
 
 class Maze {
   friend class MazeGenerator;
+  friend class MazeSolver;
 
 private:
   struct Cell {
